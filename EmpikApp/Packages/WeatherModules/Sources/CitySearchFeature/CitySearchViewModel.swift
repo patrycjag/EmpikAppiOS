@@ -8,6 +8,7 @@ public final class CitySearchViewModel {
     public enum State: Equatable {
         case idle
         case tooShort(minimumLength: Int)
+        case invalid(CityNameValidator.Failure)
         case loading
         case results([Location])
         case empty(query: String)
@@ -28,6 +29,7 @@ public final class CitySearchViewModel {
     @ObservationIgnored private var handledRetryAttempt = 0
 
     private let locationSearch: any LocationSearching
+    private let validator: CityNameValidator
     private let debounceDuration: Duration
 
     var searchKey: SearchKey {
@@ -36,9 +38,11 @@ public final class CitySearchViewModel {
 
     public init(
         locationSearch: any LocationSearching,
+        validator: CityNameValidator = CityNameValidator(),
         debounceDuration: Duration = .milliseconds(350)
     ) {
         self.locationSearch = locationSearch
+        self.validator = validator
         self.debounceDuration = debounceDuration
     }
 
@@ -46,23 +50,27 @@ public final class CitySearchViewModel {
         let isRetry = retryAttempt != handledRetryAttempt
         handledRetryAttempt = retryAttempt
 
-        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedQuery.isEmpty else {
+        switch validator.validate(query) {
+        case .empty:
             state = .idle
-            return
-        }
-        guard trimmedQuery.count >= Self.minimumQueryLength else {
-            state = .tooShort(minimumLength: Self.minimumQueryLength)
-            return
-        }
-        if !isRetry {
-            do {
-                try await Task.sleep(for: debounceDuration)
-            } catch {
+
+        case let .invalid(failure):
+            state = .invalid(failure)
+
+        case let .valid(normalizedQuery):
+            guard normalizedQuery.count >= Self.minimumQueryLength else {
+                state = .tooShort(minimumLength: Self.minimumQueryLength)
                 return
             }
+            if !isRetry {
+                do {
+                    try await Task.sleep(for: debounceDuration)
+                } catch {
+                    return
+                }
+            }
+            await performSearch(for: normalizedQuery)
         }
-        await performSearch(for: trimmedQuery)
     }
 
     public func retry() {

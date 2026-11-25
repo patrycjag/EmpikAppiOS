@@ -39,6 +39,9 @@ public struct CitySearchView: View {
         case let .tooShort(minimumLength):
             hint("Wpisz co najmniej \(minimumLength) znaki, aby wyszukać.", systemImage: "character.cursor.ibeam")
 
+        case let .invalid(failure):
+            hint(failure.message, systemImage: "exclamationmark.circle", isError: true)
+
         case let .results(locations):
             Section("Wyniki wyszukiwania") {
                 ForEach(locations) { location in
@@ -51,11 +54,11 @@ public struct CitySearchView: View {
         }
     }
 
-    private func hint(_ text: String, systemImage: String) -> some View {
+    private func hint(_ text: String, systemImage: String, isError: Bool = false) -> some View {
         Section {
             Label(text, systemImage: systemImage)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(isError ? Color.red : Color.secondary)
         }
     }
 
