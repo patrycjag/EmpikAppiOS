@@ -7,7 +7,8 @@ struct RootView: View {
     init(dependencies: AppDependencies) {
         _searchViewModel = State(
             initialValue: CitySearchViewModel(
-                locationSearch: dependencies.locationSearch
+                locationSearch: dependencies.locationSearch,
+                historyStore: dependencies.historyStore
             )
         )
     }
