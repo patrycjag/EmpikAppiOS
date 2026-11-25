@@ -14,6 +14,7 @@ let package = Package(
                 "Persistence",
                 "DesignSystem",
                 "CitySearchFeature",
+                "ForecastFeature",
             ]
         ),
     ],
@@ -26,5 +27,6 @@ let package = Package(
 
         .target(name: "DesignSystem", dependencies: ["Domain"]),
         .target(name: "CitySearchFeature", dependencies: ["Domain", "DesignSystem"]),
+        .target(name: "ForecastFeature", dependencies: ["Domain", "DesignSystem"]),
     ]
 )
