@@ -14,10 +14,14 @@ public struct ForecastView: View {
             content
         }
         .background(Color.groupedBackground)
+        .refreshable {
+            await viewModel.refresh()
+        }
         .navigationTitle(viewModel.location.name)
         .navigationBarTitleDisplayMode(.inline)
         .animation(.default, value: viewModel.state)
         .animation(.default, value: viewModel.dailyState)
+        .animation(.default, value: viewModel.refreshError)
         .task {
             await viewModel.loadIfNeeded()
         }
@@ -38,6 +42,10 @@ public struct ForecastView: View {
 
         case let .loaded(forecast):
             VStack(spacing: 16) {
+                if let refreshError = viewModel.refreshError {
+                    RefreshErrorBanner(error: refreshError)
+                }
+
                 CurrentConditionsCard(location: viewModel.location, current: forecast.current)
 
                 HourlyForecastCard(hours: forecast.hourly, timeZone: forecast.timeZone)
@@ -48,5 +56,28 @@ public struct ForecastView: View {
             }
             .padding()
         }
+    }
+}
+
+private struct RefreshErrorBanner: View {
+    let error: WeatherServiceError
+
+    var body: some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Nie udało się odświeżyć prognozy")
+                    .font(.footnote.weight(.semibold))
+                Text(error.message)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        } icon: {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(Color.orange.opacity(0.15), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .accessibilityElement(children: .combine)
     }
 }

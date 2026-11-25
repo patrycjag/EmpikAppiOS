@@ -21,6 +21,7 @@ public final class ForecastViewModel {
     public let location: Location
     public private(set) var state: State = .loading
     public private(set) var dailyState: DailyState = .loading
+    public private(set) var refreshError: WeatherServiceError?
 
     @ObservationIgnored private var hasLoaded = false
     @ObservationIgnored private var reloadTask: Task<Void, Never>?
@@ -44,38 +45,49 @@ public final class ForecastViewModel {
         reloadTask = Task { await load() }
     }
 
+    public func refresh() async {
+        await fetch(isRefresh: true)
+    }
+
     public func retryDailyForecast() {
         dailyRetryTask?.cancel()
         dailyState = .loading
-        dailyRetryTask = Task { await fetchDailyForecast() }
+        dailyRetryTask = Task { await fetchDailyForecast(isRefresh: false) }
     }
 
     private func load() async {
         state = .loading
         dailyState = .loading
-        await fetch()
+        refreshError = nil
+        await fetch(isRefresh: false)
     }
 
-    private func fetch() async {
-        async let forecast: Void = fetchForecast()
-        async let daily: Void = fetchDailyForecast()
+    private func fetch(isRefresh: Bool) async {
+        async let forecast: Void = fetchForecast(isRefresh: isRefresh)
+        async let daily: Void = fetchDailyForecast(isRefresh: isRefresh)
         _ = await (forecast, daily)
     }
 
-    private func fetchForecast() async {
+    private func fetchForecast(isRefresh: Bool) async {
         do {
             let forecast = try await forecastProvider.forecast(for: location)
             guard !Task.isCancelled else { return }
             state = .loaded(forecast)
+            refreshError = nil
         } catch is CancellationError {
             return
         } catch {
             guard !Task.isCancelled else { return }
-            state = .failure(WeatherServiceError(error))
+            let error = WeatherServiceError(error)
+            if isRefresh, case .loaded = state {
+                refreshError = error
+            } else {
+                state = .failure(error)
+            }
         }
     }
 
-    private func fetchDailyForecast() async {
+    private func fetchDailyForecast(isRefresh: Bool) async {
         do {
             let days = try await forecastProvider.dailyForecast(for: location, days: Self.dailyForecastDays)
             guard !Task.isCancelled else { return }
@@ -84,6 +96,9 @@ public final class ForecastViewModel {
             return
         } catch {
             guard !Task.isCancelled else { return }
+            if isRefresh, case .loaded = dailyState {
+                return
+            }
             dailyState = .failure(WeatherServiceError(error))
         }
     }
