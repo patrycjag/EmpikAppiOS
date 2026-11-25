@@ -20,4 +20,11 @@ public enum WeatherFormat {
         style.timeZone = timeZone
         return date.formatted(style)
     }
+
+    public static func weekday(_ date: Date, timeZone: TimeZone) -> String {
+        var style = Date.FormatStyle().weekday(.wide)
+        style.timeZone = timeZone
+        let name = date.formatted(style)
+        return name.prefix(1).uppercased() + name.dropFirst()
+    }
 }

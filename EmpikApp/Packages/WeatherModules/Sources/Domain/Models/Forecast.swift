@@ -62,3 +62,26 @@ public struct HourlyForecast: Identifiable, Equatable, Sendable {
         self.isDay = isDay
     }
 }
+
+public struct DailyForecast: Identifiable, Equatable, Sendable {
+    public var id: Date { date }
+    public let date: Date
+    public let minTemperature: Double
+    public let maxTemperature: Double
+    public let precipitationProbability: Int?
+    public let condition: WeatherCondition
+
+    public init(
+        date: Date,
+        minTemperature: Double,
+        maxTemperature: Double,
+        precipitationProbability: Int?,
+        condition: WeatherCondition
+    ) {
+        self.date = date
+        self.minTemperature = minTemperature
+        self.maxTemperature = maxTemperature
+        self.precipitationProbability = precipitationProbability
+        self.condition = condition
+    }
+}

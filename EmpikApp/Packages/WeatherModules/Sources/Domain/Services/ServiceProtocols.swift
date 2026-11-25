@@ -6,6 +6,7 @@ public protocol LocationSearching: Sendable {
 
 public protocol ForecastProviding: Sendable {
     func forecast(for location: Location) async throws -> Forecast
+    func dailyForecast(for location: Location, days: Int) async throws -> [DailyForecast]
 }
 
 public protocol SearchHistoryStoring: Sendable {

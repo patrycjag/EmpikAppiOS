@@ -32,6 +32,27 @@ enum ForecastMapper {
         )
     }
 
+    static func dailyForecasts(from dto: ForecastResponseDTO) throws -> [DailyForecast] {
+        guard let daily = dto.daily else {
+            throw WeatherServiceError.general(message: "Odpowiedź nie zawiera prognozy dziennej.")
+        }
+
+        return daily.time.indices.compactMap { index in
+            guard
+                let maxTemperature = value(daily.temperature2mMax, at: index),
+                let minTemperature = value(daily.temperature2mMin, at: index)
+            else { return nil }
+
+            return DailyForecast(
+                date: Date(timeIntervalSince1970: daily.time[index]),
+                minTemperature: minTemperature,
+                maxTemperature: maxTemperature,
+                precipitationProbability: percentage(value(daily.precipitationProbabilityMax, at: index)),
+                condition: WeatherCondition(wmoCode: value(daily.weatherCode, at: index))
+            )
+        }
+    }
+
     static func timeZone(from dto: ForecastResponseDTO) -> TimeZone {
         if let identifier = dto.timezone, let timeZone = TimeZone(identifier: identifier) {
             return timeZone

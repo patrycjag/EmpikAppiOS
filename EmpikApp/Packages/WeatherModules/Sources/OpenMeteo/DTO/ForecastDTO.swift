@@ -5,9 +5,10 @@ struct ForecastResponseDTO: Decodable, Sendable {
     let utcOffsetSeconds: Int?
     let current: CurrentDTO?
     let hourly: HourlyDTO?
+    let daily: DailyDTO?
 
     enum CodingKeys: String, CodingKey {
-        case timezone, current, hourly
+        case timezone, current, hourly, daily
         case utcOffsetSeconds = "utc_offset_seconds"
     }
 }
@@ -43,5 +44,21 @@ struct HourlyDTO: Decodable, Sendable {
         case precipitationProbability = "precipitation_probability"
         case weatherCode = "weather_code"
         case isDay = "is_day"
+    }
+}
+
+struct DailyDTO: Decodable, Sendable {
+    let time: [TimeInterval]
+    let temperature2mMax: [Double?]
+    let temperature2mMin: [Double?]
+    let precipitationProbabilityMax: [Double?]?
+    let weatherCode: [Int?]?
+
+    enum CodingKeys: String, CodingKey {
+        case time
+        case temperature2mMax = "temperature_2m_max"
+        case temperature2mMin = "temperature_2m_min"
+        case precipitationProbabilityMax = "precipitation_probability_max"
+        case weatherCode = "weather_code"
     }
 }

@@ -17,6 +17,7 @@ public struct ForecastView: View {
         .navigationTitle(viewModel.location.name)
         .navigationBarTitleDisplayMode(.inline)
         .animation(.default, value: viewModel.state)
+        .animation(.default, value: viewModel.dailyState)
         .task {
             await viewModel.loadIfNeeded()
         }
@@ -40,6 +41,10 @@ public struct ForecastView: View {
                 CurrentConditionsCard(location: viewModel.location, current: forecast.current)
 
                 HourlyForecastCard(hours: forecast.hourly, timeZone: forecast.timeZone)
+
+                DailyForecastCard(state: viewModel.dailyState, timeZone: forecast.timeZone) {
+                    viewModel.retryDailyForecast()
+                }
             }
             .padding()
         }

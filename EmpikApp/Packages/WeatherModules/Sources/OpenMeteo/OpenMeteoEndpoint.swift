@@ -32,6 +32,17 @@ enum OpenMeteoEndpoint {
         )
     }
 
+    static func dailyForecast(latitude: Double, longitude: Double, days: Int) -> Endpoint {
+        Endpoint(
+            baseURL: forecastBaseURL,
+            path: "v1/forecast",
+            queryItems: coordinates(latitude: latitude, longitude: longitude) + [
+                .init("daily", "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max"),
+                .init("forecast_days", String(days)),
+            ] + commonParameters
+        )
+    }
+
     private static func coordinates(latitude: Double, longitude: Double) -> [Endpoint.QueryItem] {
         [.init("latitude", String(latitude)), .init("longitude", String(longitude))]
     }

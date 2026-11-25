@@ -17,4 +17,18 @@ public struct OpenMeteoForecastService: ForecastProviding {
             throw WeatherServiceError(networkError: error)
         }
     }
+
+    public func dailyForecast(for location: Location, days: Int) async throws -> [DailyForecast] {
+        let endpoint = OpenMeteoEndpoint.dailyForecast(
+            latitude: location.latitude,
+            longitude: location.longitude,
+            days: days
+        )
+        do {
+            let response = try await client.get(endpoint, as: ForecastResponseDTO.self)
+            return try ForecastMapper.dailyForecasts(from: response)
+        } catch let error as NetworkError {
+            throw WeatherServiceError(networkError: error)
+        }
+    }
 }
