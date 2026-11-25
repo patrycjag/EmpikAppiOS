@@ -3,6 +3,9 @@ import Networking
 
 enum OpenMeteoEndpoint {
     static let geocodingBaseURL = URL(string: "https://geocoding-api.open-meteo.com")!
+    static let forecastBaseURL = URL(string: "https://api.open-meteo.com")!
+
+    static let hourlyForecastDays = 2
 
     static func search(name: String, language: String, count: Int) -> Endpoint {
         Endpoint(
@@ -16,4 +19,25 @@ enum OpenMeteoEndpoint {
             ]
         )
     }
+
+    static func forecast(latitude: Double, longitude: Double) -> Endpoint {
+        Endpoint(
+            baseURL: forecastBaseURL,
+            path: "v1/forecast",
+            queryItems: coordinates(latitude: latitude, longitude: longitude) + [
+                .init("current", "temperature_2m,apparent_temperature,cloud_cover,weather_code,is_day"),
+                .init("hourly", "temperature_2m,precipitation_probability,weather_code,is_day"),
+                .init("forecast_days", String(hourlyForecastDays)),
+            ] + commonParameters
+        )
+    }
+
+    private static func coordinates(latitude: Double, longitude: Double) -> [Endpoint.QueryItem] {
+        [.init("latitude", String(latitude)), .init("longitude", String(longitude))]
+    }
+
+    private static let commonParameters: [Endpoint.QueryItem] = [
+        .init("timezone", "auto"),
+        .init("timeformat", "unixtime"),
+    ]
 }

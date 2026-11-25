@@ -4,6 +4,10 @@ public protocol LocationSearching: Sendable {
     func searchLocations(named query: String) async throws -> [Location]
 }
 
+public protocol ForecastProviding: Sendable {
+    func forecast(for location: Location) async throws -> Forecast
+}
+
 public protocol SearchHistoryStoring: Sendable {
     func load() async throws -> [Location]
     func add(_ location: Location) async throws -> [Location]
