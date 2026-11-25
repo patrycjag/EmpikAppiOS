@@ -10,11 +10,14 @@ let package = Package(
             targets: [
                 "Domain",
                 "Networking",
+                "OpenMeteo",
             ]
         ),
     ],
     targets: [
         .target(name: "Domain"),
         .target(name: "Networking"),
+
+        .target(name: "OpenMeteo", dependencies: ["Domain", "Networking"]),
     ]
 )
