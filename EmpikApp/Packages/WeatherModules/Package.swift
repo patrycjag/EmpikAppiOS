@@ -11,6 +11,8 @@ let package = Package(
                 "Domain",
                 "Networking",
                 "OpenMeteo",
+                "DesignSystem",
+                "CitySearchFeature",
             ]
         ),
     ],
@@ -19,5 +21,8 @@ let package = Package(
         .target(name: "Networking"),
 
         .target(name: "OpenMeteo", dependencies: ["Domain", "Networking"]),
+
+        .target(name: "DesignSystem", dependencies: ["Domain"]),
+        .target(name: "CitySearchFeature", dependencies: ["Domain", "DesignSystem"]),
     ]
 )
