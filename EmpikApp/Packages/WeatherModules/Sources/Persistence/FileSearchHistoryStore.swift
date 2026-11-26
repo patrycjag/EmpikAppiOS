@@ -42,9 +42,9 @@ public actor FileSearchHistoryStore: SearchHistoryStoring {
         return try load()
     }
 
-    public func remove(locationID: Location.ID) throws -> [Location] {
+    public func remove(locationIDs: Set<Location.ID>) throws -> [Location] {
         var items = try load()
-        items.removeAll { $0.id == locationID }
+        items.removeAll { locationIDs.contains($0.id) }
         try save(items)
         return items
     }

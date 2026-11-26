@@ -6,6 +6,10 @@ public struct CitySearchView: View {
     @Bindable private var viewModel: CitySearchViewModel
     private let onSelect: @MainActor (Location) -> Void
 
+    private var history: SearchHistoryModel {
+        viewModel.history
+    }
+
     public init(viewModel: CitySearchViewModel, onSelect: @escaping @MainActor (Location) -> Void) {
         self.viewModel = viewModel
         self.onSelect = onSelect
@@ -20,7 +24,7 @@ public struct CitySearchView: View {
             overlay
         }
         .animation(.default, value: viewModel.state)
-        .animation(.default, value: viewModel.history)
+        .animation(.default, value: history.items)
         .navigationTitle("Pogoda")
         .searchable(
             text: $viewModel.query,
@@ -30,10 +34,10 @@ public struct CitySearchView: View {
         .textInputAutocapitalization(.words)
         .autocorrectionDisabled()
         .task {
-            await viewModel.loadHistory()
+            await history.load()
         }
-        .task(id: viewModel.searchKey) {
-            await viewModel.search()
+        .task(id: viewModel.searchRequest) {
+            await viewModel.search(viewModel.searchRequest)
         }
     }
 
@@ -65,20 +69,20 @@ public struct CitySearchView: View {
 
     @ViewBuilder
     private var historySection: some View {
-        if !viewModel.history.isEmpty {
+        if !history.items.isEmpty {
             Section {
-                ForEach(viewModel.history) { location in
+                ForEach(history.items) { location in
                     row(for: location, systemImage: "clock.arrow.circlepath")
                 }
                 .onDelete { offsets in
-                    viewModel.removeFromHistory(offsets.map { viewModel.history[$0] })
+                    history.remove(offsets.map { history.items[$0] })
                 }
             } header: {
                 HStack {
                     Text("Ostatnio wyszukiwane")
                     Spacer()
                     Button("Wyczyść") {
-                        viewModel.clearHistory()
+                        history.clear()
                     }
                     .font(.footnote.weight(.semibold))
                 }
@@ -107,7 +111,7 @@ public struct CitySearchView: View {
     @ViewBuilder
     private var overlay: some View {
         switch viewModel.state {
-        case .idle where viewModel.history.isEmpty:
+        case .idle where history.items.isEmpty:
             ContentUnavailableView(
                 "Wyszukaj miejscowość",
                 systemImage: "magnifyingglass",

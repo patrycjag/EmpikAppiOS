@@ -8,11 +8,16 @@ public struct CityNameValidator: Sendable {
 
     public enum ValidationResult: Equatable, Sendable {
         case empty
+        case tooShort(minimumLength: Int)
         case valid(normalized: String)
         case invalid(Failure)
     }
 
-    public init() {}
+    public let minimumLength: Int
+
+    public init(minimumLength: Int = 2) {
+        self.minimumLength = minimumLength
+    }
 
     public func validate(_ input: String) -> ValidationResult {
         let name = input
@@ -21,6 +26,7 @@ public struct CityNameValidator: Sendable {
             .precomposedStringWithCanonicalMapping
 
         if name.isEmpty { return .empty }
+        if name.count < minimumLength { return .tooShort(minimumLength: minimumLength) }
         if name.contains(where: \.isNumber) { return .invalid(.containsDigits) }
         if name.contains(/[^\p{L}\p{M} -]/) { return .invalid(.containsInvalidCharacters) }
         return .valid(normalized: name)
