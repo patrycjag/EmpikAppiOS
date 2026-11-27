@@ -28,5 +28,15 @@ let package = Package(
         .target(name: "DesignSystem", dependencies: ["Domain"]),
         .target(name: "CitySearchFeature", dependencies: ["Domain", "DesignSystem"]),
         .target(name: "ForecastFeature", dependencies: ["Domain", "DesignSystem"]),
+
+        .target(name: "TestSupport", dependencies: ["Domain", "Networking"], path: "Tests/TestSupport"),
+
+        .testTarget(name: "DomainTests", dependencies: ["Domain", "TestSupport"]),
+        .testTarget(name: "NetworkingTests", dependencies: ["Networking", "TestSupport"]),
+        .testTarget(name: "OpenMeteoTests", dependencies: ["OpenMeteo", "Domain", "Networking", "TestSupport"]),
+        .testTarget(name: "PersistenceTests", dependencies: ["Persistence", "Domain", "TestSupport"]),
+        .testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem", "Domain", "TestSupport"]),
+        .testTarget(name: "CitySearchFeatureTests", dependencies: ["CitySearchFeature", "Domain", "TestSupport"]),
+        .testTarget(name: "ForecastFeatureTests", dependencies: ["ForecastFeature", "Domain", "TestSupport"]),
     ]
 )

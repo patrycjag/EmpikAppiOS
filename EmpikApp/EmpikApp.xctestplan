@@ -1,0 +1,109 @@
+{
+  "configurations" : [
+    {
+      "id" : "64BFDBB1-50F7-4E68-A9C3-287561E38883",
+      "name" : "Default",
+      "options" : {}
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:Packages\/WeatherModules",
+          "identifier" : "Domain",
+          "name" : "Domain"
+        },
+        {
+          "containerPath" : "container:Packages\/WeatherModules",
+          "identifier" : "Networking",
+          "name" : "Networking"
+        },
+        {
+          "containerPath" : "container:Packages\/WeatherModules",
+          "identifier" : "OpenMeteo",
+          "name" : "OpenMeteo"
+        },
+        {
+          "containerPath" : "container:Packages\/WeatherModules",
+          "identifier" : "Persistence",
+          "name" : "Persistence"
+        },
+        {
+          "containerPath" : "container:Packages\/WeatherModules",
+          "identifier" : "DesignSystem",
+          "name" : "DesignSystem"
+        },
+        {
+          "containerPath" : "container:Packages\/WeatherModules",
+          "identifier" : "CitySearchFeature",
+          "name" : "CitySearchFeature"
+        },
+        {
+          "containerPath" : "container:Packages\/WeatherModules",
+          "identifier" : "ForecastFeature",
+          "name" : "ForecastFeature"
+        }
+      ]
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Packages\/WeatherModules",
+        "identifier" : "DomainTests",
+        "name" : "DomainTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Packages\/WeatherModules",
+        "identifier" : "NetworkingTests",
+        "name" : "NetworkingTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Packages\/WeatherModules",
+        "identifier" : "OpenMeteoTests",
+        "name" : "OpenMeteoTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Packages\/WeatherModules",
+        "identifier" : "PersistenceTests",
+        "name" : "PersistenceTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Packages\/WeatherModules",
+        "identifier" : "DesignSystemTests",
+        "name" : "DesignSystemTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Packages\/WeatherModules",
+        "identifier" : "CitySearchFeatureTests",
+        "name" : "CitySearchFeatureTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Packages\/WeatherModules",
+        "identifier" : "ForecastFeatureTests",
+        "name" : "ForecastFeatureTests"
+      }
+    }
+  ],
+  "version" : 1
+}

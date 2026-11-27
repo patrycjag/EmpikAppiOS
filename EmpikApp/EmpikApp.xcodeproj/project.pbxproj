@@ -12,6 +12,8 @@
 
 /* Begin PBXFileReference section */
 		000000000000000000000120 /* EmpikApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EmpikApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0000000000000000000000A4 /* WeatherModules */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = WeatherModules; path = Packages/WeatherModules; sourceTree = "<group>"; };
+		0000000000000000000000A5 /* EmpikApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = EmpikApp.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -35,7 +37,9 @@
 		000000000000000000000001 = {
 			isa = PBXGroup;
 			children = (
+				0000000000000000000000A5 /* EmpikApp.xctestplan */,
 				000000000000000000000010 /* EmpikApp */,
+				0000000000000000000000A4 /* WeatherModules */,
 				000000000000000000000020 /* Products */,
 			);
 			sourceTree = "<group>";
