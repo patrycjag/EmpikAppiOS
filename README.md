@@ -9,6 +9,7 @@ A SwiftUI weather app built as an iOS Developer recruitment task. Search for a c
 - **Search history**: recently opened cities are kept between launches and can be swiped away or cleared
 - **Forecast details**: current conditions, the next hours and the upcoming 7 days, with pull-to-refresh
 - **Loading, empty and error states** on every screen
+- **Accessibility**: Dynamic Type across all screens (layouts reflow at large text sizes) and VoiceOver labels, headings and hints
 
 ## Requirements
 

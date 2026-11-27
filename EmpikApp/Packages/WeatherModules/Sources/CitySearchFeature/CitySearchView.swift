@@ -80,11 +80,13 @@ public struct CitySearchView: View {
             } header: {
                 HStack {
                     Text("Ostatnio wyszukiwane")
+                        .accessibilityAddTraits(.isHeader)
                     Spacer()
                     Button("Wyczyść") {
                         history.clear()
                     }
                     .font(.footnote.weight(.semibold))
+                    .accessibilityLabel("Wyczyść historię wyszukiwania")
                 }
                 .textCase(nil)
             }
@@ -106,6 +108,7 @@ public struct CitySearchView: View {
         } label: {
             LocationRow(location: location, systemImage: systemImage)
         }
+        .accessibilityHint("Pokazuje prognozę pogody")
     }
 
     @ViewBuilder

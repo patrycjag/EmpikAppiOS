@@ -12,6 +12,7 @@ struct DailyForecastCard: View {
             Label("Najbliższe dni", systemImage: "calendar")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.secondary)
+                .accessibilityAddTraits(.isHeader)
 
             switch state {
             case .loading:
@@ -55,31 +56,106 @@ private struct DayRow: View {
     let title: String
     let day: DailyForecast
 
+    @ScaledMetric(relativeTo: .title3) private var symbolWidth: CGFloat = 32
+    @ScaledMetric(relativeTo: .caption) private var precipitationWidth: CGFloat = 40
+    @ScaledMetric(relativeTo: .body) private var temperatureWidth: CGFloat = 40
+
+    private var precipitation: String? {
+        day.precipitationProbability.map(WeatherFormat.percent)
+    }
+
+    private var minTemperature: String {
+        WeatherFormat.temperature(day.minTemperature)
+    }
+
+    private var maxTemperature: String {
+        WeatherFormat.temperature(day.maxTemperature)
+    }
+
     var body: some View {
-        HStack(spacing: 12) {
-            Text(title)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            WeatherSymbol(condition: day.condition)
-                .font(.title3)
-                .frame(width: 32)
-
-            Text(day.precipitationProbability.map(WeatherFormat.percent) ?? "–")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.blue)
-                .frame(width: 40, alignment: .trailing)
-
-            Text(WeatherFormat.temperature(day.minTemperature))
-                .foregroundStyle(.secondary)
-                .monospacedDigit()
-                .frame(width: 40, alignment: .trailing)
-
-            Text(WeatherFormat.temperature(day.maxTemperature))
-                .fontWeight(.semibold)
-                .monospacedDigit()
-                .frame(width: 40, alignment: .trailing)
+        // Falls back to a two-line layout when the columns don't fit, e.g. with large Dynamic Type sizes.
+        ViewThatFits(in: .horizontal) {
+            singleLineLayout
+            stackedLayout
         }
         .padding(.vertical, 10)
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(spokenDescription)
+    }
+
+    private var singleLineLayout: some View {
+        HStack(spacing: 12) {
+            titleText
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            symbol
+                .frame(width: symbolWidth)
+
+            precipitationText
+                .frame(width: precipitationWidth, alignment: .trailing)
+
+            minTemperatureText
+                .frame(width: temperatureWidth, alignment: .trailing)
+
+            maxTemperatureText
+                .frame(width: temperatureWidth, alignment: .trailing)
+        }
+    }
+
+    private var stackedLayout: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 12) {
+                titleText
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                symbol
+            }
+
+            HStack(spacing: 12) {
+                precipitationText
+                Spacer(minLength: 0)
+                minTemperatureText
+                maxTemperatureText
+            }
+        }
+    }
+
+    private var titleText: some View {
+        Text(title)
+    }
+
+    private var symbol: some View {
+        WeatherSymbol(condition: day.condition)
+            .font(.title3)
+    }
+
+    private var precipitationText: some View {
+        Text(precipitation ?? "–")
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.blue)
+    }
+
+    private var minTemperatureText: some View {
+        Text(minTemperature)
+            .foregroundStyle(.secondary)
+            .monospacedDigit()
+    }
+
+    private var maxTemperatureText: some View {
+        Text(maxTemperature)
+            .fontWeight(.semibold)
+            .monospacedDigit()
+    }
+
+    private var spokenDescription: String {
+        var parts = [
+            title,
+            day.condition.displayName,
+            "temperatura od \(minTemperature) do \(maxTemperature)",
+        ]
+        if let precipitation {
+            parts.append("szansa opadów \(precipitation)")
+        }
+        return parts.joined(separator: ", ")
     }
 }

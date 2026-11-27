@@ -11,6 +11,7 @@ struct HourlyForecastCard: View {
             Label("Najbliższe godziny", systemImage: "clock")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.secondary)
+                .accessibilityAddTraits(.isHeader)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 20) {
@@ -32,8 +33,10 @@ private struct HourCell: View {
     let title: String
     let hour: HourlyForecast
 
-    private var precipitation: String {
-        hour.precipitationProbability.map(WeatherFormat.percent) ?? "–"
+    @ScaledMetric(relativeTo: .title2) private var symbolHeight: CGFloat = 30
+
+    private var precipitation: String? {
+        hour.precipitationProbability.map(WeatherFormat.percent)
     }
 
     var body: some View {
@@ -44,20 +47,30 @@ private struct HourCell: View {
 
             WeatherSymbol(condition: hour.condition, isDay: hour.isDay)
                 .font(.title2)
-                .frame(height: 30)
+                .frame(height: symbolHeight)
 
             Text(WeatherFormat.temperature(hour.temperature))
                 .font(.body.weight(.semibold))
                 .monospacedDigit()
 
-            Label(precipitation, systemImage: "drop.fill")
+            Label(precipitation ?? "–", systemImage: "drop.fill")
                 .labelStyle(.titleAndIcon)
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.blue)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(
-            "\(title): \(WeatherFormat.temperature(hour.temperature)), \(hour.condition.displayName), opady \(precipitation)"
-        )
+        .accessibilityLabel(spokenDescription)
+    }
+
+    private var spokenDescription: String {
+        var parts = [
+            title,
+            WeatherFormat.temperature(hour.temperature),
+            hour.condition.displayName,
+        ]
+        if let precipitation {
+            parts.append("szansa opadów \(precipitation)")
+        }
+        return parts.joined(separator: ", ")
     }
 }

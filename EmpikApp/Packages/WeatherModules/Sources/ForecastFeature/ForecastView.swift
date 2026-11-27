@@ -22,6 +22,11 @@ public struct ForecastView: View {
         .animation(.default, value: viewModel.state)
         .animation(.default, value: viewModel.dailyState)
         .animation(.default, value: viewModel.refreshError)
+        .onChange(of: viewModel.refreshError) { _, error in
+            // Pull-to-refresh failures only show a banner, so let VoiceOver users know too.
+            guard error != nil else { return }
+            AccessibilityNotification.Announcement("Nie udało się odświeżyć prognozy").post()
+        }
         .task {
             await viewModel.loadIfNeeded()
         }

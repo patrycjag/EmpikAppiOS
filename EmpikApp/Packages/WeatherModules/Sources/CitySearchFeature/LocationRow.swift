@@ -5,11 +5,18 @@ struct LocationRow: View {
     let location: Location
     let systemImage: String
 
+    @ScaledMetric(relativeTo: .body) private var iconWidth: CGFloat = 24
+
+    init(location: Location, systemImage: String) {
+        self.location = location
+        self.systemImage = systemImage
+    }
+
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: systemImage)
                 .foregroundStyle(.secondary)
-                .frame(width: 24)
+                .frame(width: iconWidth)
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
